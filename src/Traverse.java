@@ -29,9 +29,9 @@ public class Traverse {
     eve.getConfidants().addAll(Arrays.asList(frank, irene));
     frank.getConfidants().addAll(Arrays.asList(bob, grace));
     grace.getConfidants().add(henry);
-    henry.getConfidants().addAll(Arrays.asList(alice, diana));
-    irene.getConfidants().addAll(Arrays.asList(jack, diana));
-    jack.getConfidants().addAll(Arrays.asList(charlie, bob));
+    henry.getConfidants().addAll(Arrays.asList(irene));
+    irene.getConfidants().addAll(Arrays.asList(jack));
+    jack.getConfidants().addAll(Arrays.asList(henry));
 
 
     Map<Integer, Set<Integer>> graph = new HashMap<>();
@@ -69,5 +69,47 @@ public class Traverse {
     v45.neighbors = new ArrayList<>(List.of(v23));
     v23.neighbors = new ArrayList<>(List.of());
     v67.neighbors = new ArrayList<>(List.of(v91));
+
+    //printGossipers(jack);
+    System.out.println(reachable(graph, 3, 56));
+    System.out.println(reachable(graph, 45, 3));
+    System.out.println(reachable(graph, 3, 45));
+  }
+
+  public static boolean reachable(Map<Integer, Set<Integer>> graph, int start, int end) {
+    Set<Integer> myVisited = new HashSet<>();
+    return reachable(graph, start, end, myVisited);
+  }
+
+  public static boolean reachable(Map<Integer, Set<Integer>> graph, int start, int end, Set<Integer> visited) {
+    if (start == end) return true;
+    if (visited.contains(start) || graph == null || !graph.containsKey(start) || graph.get(start) == null) return false;
+  
+    visited.add(start);
+
+    for (int neighbor : graph.get(start)) {
+      if (reachable(graph, neighbor, end, visited)) return true;
+      // if any neighbors reach the end, return true 
+      // (we know we found something, if we find one path, dont need to look at other paths)
+    }
+
+    return false;
+  }
+
+  public static void printGossipers(Person person) {
+    Set<Person> myVisited = new HashSet<>();
+    printGossipers(person, myVisited);
+  }
+
+  public static void printGossipers(Person person, Set<Person> visited) {
+    if (person == null || visited.contains(person)) return;
+
+    visited.add(person);
+    System.out.println(person.getName());
+
+    for (Person confidant : person.getConfidants())
+    {
+      printGossipers(confidant, visited);
+    }
   }
 }
